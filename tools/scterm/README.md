@@ -38,3 +38,5 @@ cargo build --release
 ## 许可证
 
 MIT，见 [LICENSE](LICENSE)。
+
+<!-- CI trigger: 2026-11-07T22:08:53 -->
