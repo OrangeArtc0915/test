@@ -9,6 +9,7 @@ on:
       - main
     paths:
       - "tools/scterm/**"
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -22,10 +23,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
-      - uses: Swatinem/rust-cache@v2
-        with:
-          workspaces: tools/scterm
       - name: 单元测试
-        run: cargo test --quiet -- --test-threads=1 --skip e2e::
+        shell: pwsh
+        run: |
+          cargo test --quiet -- --test-threads=1 --skip e2e:: 2>&1 | Tee-Object -FilePath test.log
+          if ($LASTEXITCODE -ne 0) {
+            "## 单元测试失败" | Out-File -Append -Encoding utf8 $env:GITHUB_STEP_SUMMARY
+            '```' | Out-File -Append -Encoding utf8 $env:GITHUB_STEP_SUMMARY
+            Get-Content test.log | Out-File -Append -Encoding utf8 $env:GITHUB_STEP_SUMMARY
+            '```' | Out-File -Append -Encoding utf8 $env:GITHUB_STEP_SUMMARY
+            exit 1
+          }
       - name: 构建
         run: cargo build --release
