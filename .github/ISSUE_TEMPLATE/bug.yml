@@ -1,0 +1,33 @@
+name: Bug 报告
+description: 报告一个问题；提交后请补上 tool/<名称> 标签，便于按工具过滤
+title: "[Bug] "
+labels: ["bug"]
+body:
+  - type: dropdown
+    id: tool
+    attributes:
+      label: 涉及工具
+      options:
+        - scterm
+        - CraftDock
+        - TuiMonitor
+        - SCM 主程序
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: 现象
+      description: 发生了什么？期望是什么？
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: 版本
+      placeholder: scterm 0.1.0 / SCM 2.1.0
+  - type: textarea
+    id: logs
+    attributes:
+      label: 日志或截图
+      render: text

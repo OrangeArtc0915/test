@@ -1,0 +1,31 @@
+name: scterm CI
+
+on:
+  pull_request:
+    paths:
+      - "tools/scterm/**"
+  push:
+    branches:
+      - main
+    paths:
+      - "tools/scterm/**"
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: tools/scterm
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: tools/scterm
+      - name: 单元测试
+        run: cargo test --quiet -- --test-threads=1 --skip e2e::
+      - name: 构建
+        run: cargo build --release

@@ -1,0 +1,39 @@
+name: scterm Release
+
+on:
+  push:
+    tags:
+      - "scterm-v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: tools/scterm
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: 构建
+        run: cargo build --release
+      - name: 打包
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force dist | Out-Null
+          Copy-Item target/release/scterm.exe dist/
+          Copy-Item README.md, LICENSE dist/
+          $name = "scterm-$env:GITHUB_REF_NAME-win-x64.zip"
+          Compress-Archive -Path dist/* -DestinationPath $name
+          Get-FileHash $name -Algorithm SHA256 | ForEach-Object {
+            "$($_.Hash.ToLower())  $name" | Out-File -Encoding ascii "$name.sha256"
+          }
+      - name: 发布
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            tools/scterm/scterm-*.zip
+            tools/scterm/scterm-*.zip.sha256
+          generate_release_notes: true

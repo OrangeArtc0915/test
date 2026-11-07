@@ -1,0 +1,33 @@
+{
+  "schema": 1,
+  "updated": "2026-11-07",
+  "tools": {
+    "scterm": {
+      "name": "scterm",
+      "version": "0.1.0",
+      "path": "tools/scterm",
+      "source": "https://github.com/OrangeArtc0915/test/tree/main/tools/scterm",
+      "release": "https://github.com/OrangeArtc0915/test/releases/tag/scterm-v0.1.0",
+      "download": "https://github.com/OrangeArtc0915/test/releases/download/scterm-v0.1.0/scterm-v0.1.0-win-x64.zip",
+      "sha256": ""
+    },
+    "craftdock": {
+      "name": "CraftDock",
+      "version": "1.4.0",
+      "path": "tools/craftdock",
+      "source": "https://github.com/OrangeArtc0915/CraftDock",
+      "release": "https://github.com/OrangeArtc0915/CraftDock/releases/latest",
+      "download": "",
+      "sha256": ""
+    },
+    "tuimonitor": {
+      "name": "TuiMonitor",
+      "version": "0.0.0",
+      "path": "tools/tuimonitor",
+      "source": "https://github.com/OrangeArtc0915/test/tree/main/tools/tuimonitor",
+      "release": "",
+      "download": "",
+      "sha256": ""
+    }
+  }
+}

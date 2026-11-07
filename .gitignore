@@ -1,0 +1,16 @@
+# 只忽略构建产物，源码目录全部进仓库
+**/target/
+**/node_modules/
+**/dist/
+*.exe
+*.pdb
+*.zip
+*.pfx
+*.pvk
+
+# 本地环境
+.vs/
+.vscode/
+.idea/
+Thumbs.db
+desktop.ini
