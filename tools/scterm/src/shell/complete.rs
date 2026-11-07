@@ -105,7 +105,9 @@ fn command_candidates(prefix: &str, aliases: &BTreeMap<String, String>) -> Vec<C
     let mut seen: BTreeSet<String> = BTreeSet::new();
 
     let push = |name: &str, out: &mut Vec<Candidate>, seen: &mut BTreeSet<String>| {
-        let key = name.to_ascii_lowercase();
+        // 按「去掉可执行扩展名」去重：内置 mkdir 与 PATH 里的 mkdir.exe 是同一个命令，
+        // 否则 Git / LLVM 等带 Unix 工具的 PATH 会让补全退化成公共前缀、不再补空格。
+        let key = stem_key(name);
         if seen.insert(key) {
             out.push(Candidate {
                 insert: name.to_string(),
@@ -132,6 +134,17 @@ fn command_candidates(prefix: &str, aliases: &BTreeMap<String, String>) -> Vec<C
     }
     out.sort_by(|a, b| a.insert.to_ascii_lowercase().cmp(&b.insert.to_ascii_lowercase()));
     out
+}
+
+/// 去重键：小写并去掉 PATHEXT 里的扩展名（`mkdir.exe` 与 `mkdir` 视为同一项）。
+fn stem_key(name: &str) -> String {
+    let lower = name.to_ascii_lowercase();
+    for ext in builtins::pathext() {
+        if let Some(stem) = lower.strip_suffix(&ext) {
+            return stem.to_string();
+        }
+    }
+    lower
 }
 
 /// PATH 中前缀匹配的可执行文件名（按 PATHEXT 过滤）。
@@ -246,11 +259,18 @@ mod tests {
     }
 
     #[test]
+    fn stem_key_ignores_executable_extensions() {
+        assert_eq!(stem_key("MKDIR.EXE"), "mkdir");
+        assert_eq!(stem_key("cmd"), "cmd");
+    }
+
+    #[test]
     fn completes_alias() {
+        // 用不太可能和 PATH 里可执行文件重名的别名（CI 的 PATH 带 LLVM 的 lld.exe）。
         let mut aliases = BTreeMap::new();
-        aliases.insert("ll".to_string(), "dir".to_string());
-        let result = complete("ll", 2, &aliases);
-        assert_eq!(result.line, "ll ");
+        aliases.insert("zz".to_string(), "dir".to_string());
+        let result = complete("zz", 2, &aliases);
+        assert_eq!(result.line, "zz ");
     }
 
     #[test]
